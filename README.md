@@ -1,5 +1,5 @@
 # Building User Journey Games from Multi-party Event Logs
-This is the repository for the paper ``Building User Journey Games from Multi-party Event Logs'' by Kobialka, Mannhardt, Tapia Tarifa and Johnsen.
+This is the repository for the paper "Building User Journey Games from Multi-party Event Logs'' by Kobialka, Mannhardt, Tapia Tarifa and Johnsen.
 The paper introduces a multi-party view on event logs and promotes a game theoretic model for user journey models.
 It introduces the concept of a "decision boundary", a subset of nodes on which the outcome of the user journey is determined.
 The outcome of the journey can not be changed after leaving the decision boundary.
