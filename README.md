@@ -5,7 +5,7 @@ It introduces the concept of a "decision boundary", a subset of nodes after whic
 The outcome of the journey can not be changed after leaving the decision boundary.
 The decision boundary is used for a model reduction preserving the decision structure of the game, allowing to apply the method to real-world event logs.
 - The evaluation is implemented in "main.ipynb". The notebook produces all plots.
-- "max.csv", "step.csv" and "both.csv" contain the data from the respective UPPAAL simulations, Fig. 4.
+- The folder simulations contains "max.csv", "step.csv" and "both.csv"; the data from the respective UPPAAL simulations, Fig. 4.
 - "clustered_before.png" and "clustered_after.png" contain the process models, Fig 5.
 - "activities.xml" contains the actors for events (user or company).
 
