@@ -9,4 +9,4 @@ The decision boundary is used for a model reduction preserving the decision stru
 - "clustered_before.png" and "clustered_after.png" contain the process models, Fig 5.
 
 # Model Checking
-To model check the queries was UPPAAL 4.1.20 with Stratego 9 under for Linux-64 used.
+To model check the queries was UPPAAL 4.1.20 with Stratego 9 for Linux-64 used.
