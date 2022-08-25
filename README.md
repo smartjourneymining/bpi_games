@@ -7,6 +7,7 @@ The decision boundary is used for a model reduction preserving the decision stru
 - The evaluation is implemented in "main.ipynb". The notebook produces all plots.
 - "max.csv", "step.csv" and "both.csv" contain the data from the respective UPPAAL simulations, Fig. 4.
 - "clustered_before.png" and "clustered_after.png" contain the process models, Fig 5.
+- "activities.xml" contains the actors for events (user or company).
 
 # Model Checking
 To model check the queries was UPPAAL 4.1.20 with Stratego 9 for Linux-64 used.
