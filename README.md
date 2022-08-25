@@ -11,3 +11,5 @@ The decision boundary is used for a model reduction preserving the decision stru
 
 # Model Checking
 To model check the queries was UPPAAL 4.1.20 with Stratego 9 for Linux-64 used.
+
+Note: the construction of plots creates additional *.dot files.
