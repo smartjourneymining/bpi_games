@@ -1,33 +1,41 @@
 import subprocess
 
-max = 10
+max_sequence = 10
+max_unrolling = 10
 out = "/home/paul/Documents/bpi_games/cli/"
 activities_file = "activities.xml"
 uppaal_path = "/home/paul/Downloads/uppaal-4.1.20-stratego-9-linux64/bin/verifyta"
-#output = subprocess.call(["python3",  "log_parser.py", '/home/paul/Documents/bpi_games/BPI Challenge 2017.xes', out])
+timeout = 180
 
-#print(output)
+output = subprocess.call(["python3",  "log_parser.py", '/home/paul/Documents/bpi_games/BPI Challenge 2017.xes', out])
 
 for i in range(3,4):
-    #output = subprocess.Popen(["python3", "process_model.py", "/home/paul/Documents/bpi_games/cli/bpic2017_after.xes", out, "-hist" , str(i)], stdout=subprocess.PIPE)
-    #output.wait()
-    #file_name = str(output.communicate()[0]).replace("\\n'", '').split("Generated: ")[-1]
-    #print(file_name)
+    try: 
+        output = subprocess.check_output(["python3", "process_model.py", "/home/paul/Documents/bpi_games/cli/bpic2017_before.xes", out, "-hist" , str(i)], timeout=timeout)
+        file_name = str(output).replace("\\n'", '').split("Generated: ")[-1]
+        print(file_name)
 
-    file_name = '/home/paul/Documents/bpi_games/cli/PMODEL_input:bpic2017_after_type:sequence_history:3.gexf'
-    output = subprocess.Popen(["python3", "build_game.py", file_name, out, activities_file], stdout=subprocess.PIPE)
-    output.wait()
-    file_name = str(output.communicate()[0]).replace("\\n'", '').split("Generated: ")[-1]
-    print(file_name)
+        output = subprocess.check_output(["python3", "build_game.py", file_name, out, activities_file], timeout=timeout)
+        file_name = str(output).replace("\\n'", '').split("Generated: ")[-1]
+        print(file_name)
 
-    output = subprocess.Popen(["python3", "decision_boundary.py", file_name, out, uppaal_path], stdout=subprocess.PIPE)
-    output.wait()
-    file_name = str(output.communicate()[0]).replace("\\n'", '').split("Generated: ")[-1]
-    print(file_name)
+        unrolled_model_name = file_name
+        for k in range(1,4):
+            try:
+                output = subprocess.check_output(["python3", "decision_boundary.py", unrolled_model_name, out, uppaal_path, "-k", str(k)], timeout=timeout)
+                file_name = str(output).replace("\\n'", '').split("Generated: ")[-1]
+                print(file_name)
 
-    output = subprocess.Popen(["python3", "decision_boundary_reduction.py", file_name, out], stdout=subprocess.PIPE)
-    output.wait()
-    file_name = str(output.communicate()[0]).replace("\\n'", '').split("Generated: ")[-1]
-    print(file_name)
+                output = subprocess.check_output(["python3", "decision_boundary_reduction.py", file_name, out], timeout=timeout)
+                file_name = str(output).replace("\\n'", '').split("Generated: ")[-1]
+                print(file_name)
 
+            except subprocess.TimeoutExpired:
+                print("Timeout - continue now")
+                continue
+
+        
+    except subprocess.TimeoutExpired:
+        print("Timeout - continue now")
+        continue
 print("done")
