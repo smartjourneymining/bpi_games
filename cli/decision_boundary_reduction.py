@@ -6,8 +6,8 @@ import os
 parser = argparse.ArgumentParser(
                     prog = 'build_game',
                     description = "Transforms a directly follows model produces by 'process_model.py' into a game by annotating (un)controllable actions.",)
-parser.add_argument('-i', '--input', help = "Input model", required = True)
-parser.add_argument('-o', '--output', help = "Output path for reduced game", required = True) 
+parser.add_argument('input', help = "Input model")
+parser.add_argument('output', help = "Output path for reduced game") 
 
 args = parser.parse_args()
 
@@ -36,12 +36,15 @@ def reduce_graph(g):
 
     g.nodes["pos"]['viz'] = {'color': {'r': 0, 'g': 255, 'b': 0, 'a': 0}, 'position' : {'x' : 0.0, 'y': 0.0, 'z': 0.0}}
     g.nodes["neg"]['viz'] = {'color': {'r': 255, 'g': 0, 'b': 0, 'a': 0}, 'position' : {'x' : 0.0, 'y': 0.0, 'z': 0.0}}
+
+    g.nodes["neg"]["final"] = True
+    g.nodes["pos"]["final"] = True
    
     g.remove_edges_from(nx.selfloop_edges(g))
 
     return g
 
-g = nx.read_gexf(args.output+"RED"+ ".gexf")
+g = nx.read_gexf(args.input)
 
 # Load graph
 g = nx.read_gexf(args.input)
@@ -52,26 +55,6 @@ g = reduce_graph(g)
 g.graph["reduced_graph"] = True
 
 print(g.graph["reduced_graph"])
-nx.write_gexf(g, args.output + args.input.split("/")[-1].split(".")[0] + "reduced:True"+ ".xegf")
-from networkx.drawing.nx_agraph import write_dot
-write_dot(g, args.output+"test.dot")
-
-import xml.etree.ElementTree as ET
-doc = ET.parse(args.output+"RED"+ ".gexf")
-root = doc.getroot()
-userElement = ET.Element("graph_parameters")
-newSub = ET.SubElement(userElement, "graph_parameters")
-newSub.set("reduced", "True")
-root.insert(0, newSub)
-tree = ET.ElementTree(root)
-#tree.write(args.output+"RED"+ ".gexf", encoding = 'UTF-8')
-
-g = nx.read_gexf(args.output+"RED"+ ".gexf")
-
-doc = ET.parse(args.output+"RED"+ ".gexf")
-root = doc.getroot()
-
-print(list())
-
-for x in root.findall("graph_parameters"):
-    print(x)
+name = args.output + args.input.split("/")[-1].split(".")[0] + "reduced:True"+ ".gexf"
+nx.write_gexf(g, name)
+print("Generated:", name)

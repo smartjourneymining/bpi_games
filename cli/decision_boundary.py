@@ -212,7 +212,53 @@ def query(g, query_path):
     # partial graph implications, per activity
     results = {}
     
-    for a in g.nodes:
+    assert('start' in g)
+    dfs_numbers = {}
+
+    for n,i in zip(nx.dfs_postorder_nodes(g, 'start'), range(len(g.nodes)-1)):
+        dfs_numbers[i] = n
+    dfs_numbers[len(g.nodes)-1] = 'start'
+
+    for i in range(len(g.nodes)):
+    #for a in g.nodes:
+
+        assert(i in dfs_numbers)
+        current_state = dfs_numbers[i]
+
+        sub_nodes = set()
+        sub_nodes.update(set(list(nx.descendants(g, current_state))))
+        sub_nodes.add(current_state) # cant assume that all sub_nodes are contained due to loops
+
+        all_neighbours_contained = True
+        neighbour_results = []
+        for n in g[current_state]:
+            if n not in results:
+                all_neighbours_contained = False
+                break
+            neighbour_results.append(results[n])
+
+        all_leaves_computed = True
+        leave_results = []
+        for s in sub_nodes:
+            if g.out_degree(s) == 0 and s != current_state:
+                if s not in results:
+                    all_leaves_computed = False
+                    break
+                leave_results.append(results[s])
+        
+        # can set results if all neighbours are contained
+        if all_neighbours_contained and len(set(neighbour_results))==1:
+            results[current_state] =  neighbour_results[0]# write to assign result if determined
+            g.nodes[current_state]["positive_guarantee"] = neighbour_results[0]
+            continue
+        
+        # can set result by reachable leaves
+        if all_leaves_computed and len(set(leave_results)) == 1:
+            results[current_state] = leave_results[0]
+            g.nodes[current_state]["positive_guarantee"] = leave_results[0]
+            continue
+
+        """
         states = [a]
 
         sub_nodes = set()
@@ -221,6 +267,8 @@ def query(g, query_path):
             sub_nodes.add(s)
         if len(sub_nodes) > args.threshold_reachable_nodes: # execute only on nodes with less than threshold descendants for better performance
             continue
+
+        """
         subgraph = nx.subgraph(g, sub_nodes)
         subgraph = nx.DiGraph(subgraph)
 
@@ -235,10 +283,9 @@ def query(g, query_path):
             subgraph["start"][n]["cost"] = 0
         # if initial node lies on cycle, per default set as start node
         if "start" not in subgraph.nodes:
-            for n in states:
-                subgraph.add_edge("start", n)
-                subgraph["start"][n]["controllable"] = True
-                subgraph["start"][n]["cost"] = 0
+            subgraph.add_edge("start", current_state)
+            subgraph["start"][current_state]["controllable"] = True
+            subgraph["start"][current_state]["cost"] = 0
 
         if args.debug:
             nx.write_gexf(subgraph, args.output+"test.gexf")
@@ -253,9 +300,9 @@ def query(g, query_path):
         to_uppaal(subgraph_unrolled, args.output+'bpi2017subgraph.xml')
         out = subprocess.Popen([args.uppaal_stratego, args.output+'bpi2017subgraph.xml', query_path], stdout=subprocess.PIPE)
         result = "is satisfied" in str(out.communicate()[0])
-        results[a] = result
+        results[current_state] = result
 
-        g.nodes[a]["positive_guarantee"] = result
+        g.nodes[current_state]["positive_guarantee"] = result
     
 
     return g, results
@@ -312,7 +359,7 @@ g, results = query(g, args.query)
 # Compute decision boundary
 g = reachable_cluster(g, results)
 
-name = args.output+"DECB"+ args.input.split("/")[-1].split(".")[0].split("GAME")[-1] + "threshold_reachable_nodes:" + str(args.threshold_reachable_nodes) + "_" + "unrolling_factor:" + str(args.unrolling_factor) + "_" + ".gexf"
+name = args.output+"DECB"+ args.input.split("/")[-1].split(".")[0].split("GAME")[-1] + "_threshold_reachable_nodes:" + str(args.threshold_reachable_nodes) + "_" + "unrolling_factor:" + str(args.unrolling_factor) + "_" + ".gexf"
 
 nx.write_gexf(g, name)
 print("Generated:", name)

@@ -7,8 +7,8 @@ from pm4py.objects.log.importer.xes import importer as xes_importer
 parser = argparse.ArgumentParser(
                     prog = 'log_parser',
                     description = "Takes the BPIC'17 event log as input and performs the preprocessing described in 'Building User Journey Games from Multi-party Event Logs' by Kobialka et al. Outputs two event logs by default: before and after the concept drift in July.",)
-parser.add_argument('-i', '--input', help = "Input file for BIPC'17 event log", required = True) 
-parser.add_argument('-o', '--output', help = "Output path for processed event logs", required = True) 
+parser.add_argument('input', help = "Input file for BIPC'17 event log") 
+parser.add_argument('output', help = "Output path for processed event logs") 
 parser.add_argument('-mst', '--min_speaking_time', help = "Minimum duration of an aggregated call event to be considered (in sec.); default = 60", default = 60) 
 parser.add_argument('-d', '--day_timeout', help = "Number of days until the cancellation is considered a timeout; default = 20", default = 20) 
 
@@ -142,5 +142,5 @@ process_log(filtered_log_before)
 process_log(filtered_log_after)
 
 #export
-export(filtered_log_before, args.output+"bpic2017_before.xes")
-export(filtered_log_after, args.output+"bpic2017_after.xes")
+export(filtered_log_before, args.output+"bpic2017_before")
+export(filtered_log_after, args.output+"bpic2017_after")

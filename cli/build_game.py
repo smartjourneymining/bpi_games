@@ -6,9 +6,9 @@ import json
 parser = argparse.ArgumentParser(
                     prog = 'build_game',
                     description = "Transforms a directly follows model produces by 'process_model.py' into a game by annotating (un)controllable actions.",)
-parser.add_argument('-i', '--input', help = "Input model", required = True)
-parser.add_argument('-o', '--output', help = "Output path for game", required = True) 
-parser.add_argument('-a', '--activities', help = "JSON-file storing controllability of edges.", required = True) 
+parser.add_argument('input', help = "Input model")
+parser.add_argument('output', help = "Output path for game") 
+parser.add_argument('activities', help = "JSON-file storing controllability of edges") 
 
 args = parser.parse_args()
 
@@ -28,4 +28,6 @@ for e in g.edges:
     if not controllable_set:
         g.edges[e]['controllable'] = True
 
-nx.write_gexf(g, args.output + "GAME" + args.input.split("/")[-1].split(".")[0].split("PMODEL")[-1] + "_" + "actors:" + args.activities.split("/")[-1]+'.gexf')
+name = args.output + "GAME" + args.input.split("/")[-1].split(".")[0].split("PMODEL")[-1] + "_" + "actors:" + args.activities.split("/")[-1]+'.gexf'
+nx.write_gexf(g, name)
+print("Generated:", name)

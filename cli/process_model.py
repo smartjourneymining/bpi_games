@@ -8,8 +8,8 @@ import numpy as np
 parser = argparse.ArgumentParser(
                     prog = 'process_model',
                     description = "Takes an processed event log as input and computes a directly-follows process model with weights.",)
-parser.add_argument('-i', '--input', help = "Input event log", required = True) 
-parser.add_argument('-o', '--output', help = "Output path for process model", required = True) 
+parser.add_argument('input', help = "Input event log") 
+parser.add_argument('output', help = "Output path for process model") 
 parser.add_argument('-t', '--type', help = "Type of directly follows model: default = hist", default = "sequence", choices = ["sequence", "multiset"]) 
 parser.add_argument('-hist', '--history', help = "Number of past steps to be included; default = 3", default = 3, type = int) 
 
@@ -123,6 +123,20 @@ def annotate_graph(g, edge_cost):
         g[e[0]][e[1]]['cost'] = round(edge_cost[e],2)
     return g
 
+def add_traversal_information(g, edge_mapping):
+    for e in g.edges:
+        g.edges[e]['edge_traversal'] = len(edge_mapping[e])
+
+    for s in g:
+        if s not in ["start"] and "pos" not in s and "neg" not in s:
+            assert(sum( [g.edges[e]['edge_traversal'] for e in g.in_edges(s)] ) == sum( [g.edges[e]['edge_traversal'] for e in g.out_edges(s)] ))
+        outgoing_sum = sum( [g.edges[e]['edge_traversal'] for e in g.out_edges(s)] )
+        if "pos" in s or "neg" in s:
+            outgoing_sum = sum( [g.edges[e]['edge_traversal'] for e in g.in_edges(s)] ) # change to ingoing sum
+        g.nodes[s]['node_traversal'] = outgoing_sum
+
+    return g
+
 log = xes_importer.apply(args.input)
 
 system, edge_mapping = transition_system(log, args.history, ms if args.type == "multiset" else sequence)
@@ -130,6 +144,10 @@ edge_cost = compute_edge_cost(system, log, edge_mapping)
 
 g = annotate_graph(system, edge_cost)
 
-nx.write_gexf(g, args.output + "PMODEL" + "_" + "input:"+ args.input.split("/")[-1].split(".")[0]  + "_" + "type:" + args.type + "_"+ "history:"+ str(args.history) + '.xegf') 
+g = add_traversal_information(g, edge_mapping)
+
+name = args.output + "PMODEL" + "_" + "input:"+ args.input.split("/")[-1].split(".")[0]  + "_" + "type:" + args.type + "_"+ "history:"+ str(args.history) + '.gexf'
 # "_" + datetime.today().strftime('%Y-%m-%d#%H:%M:%S')
 # not sure if datetime needed
+nx.write_gexf(g, name) 
+print("Generated:", name)
