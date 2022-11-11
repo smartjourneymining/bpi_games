@@ -8,10 +8,10 @@ from datetime import datetime
 parser = argparse.ArgumentParser(
                     prog = 'build_game',
                     description = "Transforms a directly follows model produces by 'process_model.py' into a game by annotating (un)controllable actions.",)
-parser.add_argument('-i', '--input', help = "Input model", required = True)
-parser.add_argument('-o', '--output', help = "Output path for game with annotated decision boundary", required = True) 
+parser.add_argument('input', help = "Input model")
+parser.add_argument('output', help = "Output path for game with annotated decision boundary")
+parser.add_argument('uppaal_stratego', help = "Path to Uppaal Stratego's VERIFYTA") 
 parser.add_argument('-k', '--unrolling_factor', help = "Constant factor how often every lop is unrolled; default = 1", type = int, default = 1) 
-parser.add_argument('-u', '--uppaal_stratego', help = "Path to Uppaal Stratego's VERIFYTA", required = True) 
 parser.add_argument('-t', '--threshold_reachable_nodes', help = "Maximum number of nodes until reachability query is still triggered.", default = 80, type = int) 
 parser.add_argument('-d', '--debug', help = "Print additional information", default = False) 
 parser.add_argument('-q', '--query', help = "Path to the boolean query for the decision boundary.", default = 'guaranteed.q')
@@ -116,7 +116,6 @@ def unroll(G, start, target, k, debug = args.debug):
                     G_gen[s][t]['cost'] = G[s_original][t_original]['cost']
                 if('controllable' in G[s_original][t_original]):
                     G_gen[s][t]['controllable'] = G[s_original][t_original]['controllable']
-        to_uppaal(G_gen, args.output+'bpi2017subgraph.xml')
 
     return G_gen
 
@@ -241,8 +240,9 @@ def query(g, query_path):
                 subgraph["start"][n]["controllable"] = True
                 subgraph["start"][n]["cost"] = 0
 
-        nx.write_gexf(subgraph, args.output+"test.gexf")
-        to_uppaal(subgraph, args.output+'bpi2017subgraph.xml')
+        if args.debug:
+            nx.write_gexf(subgraph, args.output+"test.gexf")
+            to_uppaal(subgraph, args.output+'bpi2017subgraph.xml')
         target = [s for s in subgraph.nodes if "positive" in s or "negative" in s]
         subgraph_unrolled = unroll(subgraph, "start", target, args.unrolling_factor)
         positives = []
@@ -312,4 +312,7 @@ g, results = query(g, args.query)
 # Compute decision boundary
 g = reachable_cluster(g, results)
 
-nx.write_gexf(g, args.output+"DECB"+ args.input.split("/")[-1].split(".")[0].split("GAME:")[-1] + "threshold_reachable_nodes:" + args.threshold_reachable_nodes + "_" + "unrolling_factor:" + args.unrolling_factor + "_" + ".gexf")
+name = args.output+"DECB"+ args.input.split("/")[-1].split(".")[0].split("GAME")[-1] + "threshold_reachable_nodes:" + str(args.threshold_reachable_nodes) + "_" + "unrolling_factor:" + str(args.unrolling_factor) + "_" + ".gexf"
+
+nx.write_gexf(g, name)
+print("Generated:", name)
