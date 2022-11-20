@@ -20,25 +20,25 @@ All tools are implemented as command-line tools in Python.
 The file 'execution.py' demonstrates how the tools are connected and implements parameter tests for ranges of transition system histories and unrolling factors.
 Mind that for every step a single file is created, the output might be excessive.
 
-Each program takes the result of the prior step as input and produces the next part of the pipeline described in the paper "Building User Journey Games from Multi-party Event Logs'' by Kobialka etal.
+Each program takes the result of the prior step as input and performs the next step of the pipeline, as described in the paper "Building User Journey Games from Multi-party Event Logs'' by Kobialka etal.
 Each tool saves the chosen parameters in the filename of the written output and prints the output filename to the console.
  
 Transition systems and games are saved in the ".gexf" fileformat, [.gexf](https://gexf.net/).
 Further details on written parameters are in the subsection "File Format".
 
 - "log_parser.py'' takes the BPIC'17 event log as input and performs the described preprocessing, writing two separate event-logs as output, called "bpic2017_after.xes" and "bpic2017_before.xes".
-- "process_model.py'' constructs a process model from a preprocessed event log. The user can decide to either choose the "sequence" abstraction or the "multiset" abstraction and the length of the history. The resulting process model is 
+- "process_model.py'' constructs a process model from a preprocessed event log. The user can decide to either choose the "sequence" abstraction or the "multiset" abstraction and the length of the history. The resulting process model is saved and its name printed.
 - "build_game.py'' transform the process model to a game by annotating the edges with actor information.
-The actor information is given as input in JSON. Every not given edge is considered to be controllable.
+The actor information is given as input in JSON. Every edge not stated is considered to be controllable.
 - "decision_boundary.py'' computes the decision boundary and writes the annotated game as output, the reduction is only performed in the next step.
-- "decision_boundary_reduction.py'' applies the decision boundary reduction: Merging all negative nodes into one and all positive nodes.
+- "decision_boundary_reduction.py'' applies the decision boundary reduction: Merging all negative nodes into one and all positive nodes into one.
 
 ## File format
 We use the ".gexf" file format to store transition systems, and games.
 
 Edges contain the fields:
 - "action" the activity performed along causing the edge
-- "controllable" (bool) indicating if the edge is controllable (company controlled) or user controlled.
+- "controllable" indicating if the edge is controllable (company controlled) or user controlled.
 - "cost" stating the weight of the edge
 - "edge_traversal" the number of traversals along the edge
 
