@@ -24,7 +24,7 @@ Each program takes the result of the prior step as input and produces the next p
 Each tool saves the chosen parameters in the filename of the written output and prints the output filename to the console.
  
 Transition systems and games are saved in the ".gexf" fileformat, [.gexf](https://gexf.net/).
-Further details on written parameters are [here](## Game).
+Further details on written parameters are in the subsection "File Format".
 
 - "log_parser.py'' takes the BPIC'17 event log as input and performs the described preprocessing, writing two separate event-logs as output, called "bpic2017_after.xes" and "bpic2017_before.xes".
 - "process_model.py'' constructs a process model from a preprocessed event log. The user can decide to either choose the "sequence" abstraction or the "multiset" abstraction and the length of the history. The resulting process model is 
@@ -35,6 +35,7 @@ The actor information is given as input in JSON. Every not given edge is conside
 
 ## File format
 We use the ".gexf" file format to store transition systems, and games.
+
 Edges contain the fields:
 - "action" the activity performed along causing the edge
 - "controllable" (bool) indicating if the edge is controllable (company controlled) or user controlled.
