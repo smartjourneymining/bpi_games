@@ -4,8 +4,8 @@ import networkx as nx
 import os 
 
 parser = argparse.ArgumentParser(
-                    prog = 'build_game',
-                    description = "Transforms a directly follows model produces by 'process_model.py' into a game by annotating (un)controllable actions.",)
+                    prog = 'decision_boundary_reduction',
+                    description = "Merges determined states together to results in one guaranteed positive outcome state and one guaranteed negative outcome state.",)
 parser.add_argument('input', help = "Input model")
 parser.add_argument('output', help = "Output path for reduced game") 
 
@@ -39,6 +39,10 @@ def reduce_graph(g):
 
     g.nodes["neg"]["final"] = True
     g.nodes["pos"]["final"] = True
+
+    for s in g:
+        if "final" not in g.nodes[s]:
+             g.nodes[s]["final"] = False
    
     g.remove_edges_from(nx.selfloop_edges(g))
 

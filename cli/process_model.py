@@ -23,7 +23,7 @@ def ms(trace):
             multiset[pos['concept:name']] = 1
         else:
             multiset[pos['concept:name']] += 1
-    return json.dumps(multiset, sort_keys=True).encode() # use json encodings for multisets
+    return json.dumps(multiset, sort_keys=True).encode().decode("utf-8") # use json encodings for multisets
 
 # Computes the sequence-history of the given trace
 def sequence(trace): 

@@ -6,13 +6,12 @@ import subprocess
 from datetime import datetime
 
 parser = argparse.ArgumentParser(
-                    prog = 'build_game',
-                    description = "Transforms a directly follows model produces by 'process_model.py' into a game by annotating (un)controllable actions.",)
+                    prog = 'decision_boundary',
+                    description = "Computes the decision boundary of the given game.",)
 parser.add_argument('input', help = "Input model")
 parser.add_argument('output', help = "Output path for game with annotated decision boundary")
 parser.add_argument('uppaal_stratego', help = "Path to Uppaal Stratego's VERIFYTA") 
 parser.add_argument('-k', '--unrolling_factor', help = "Constant factor how often every lop is unrolled; default = 1", type = int, default = 1) 
-parser.add_argument('-t', '--threshold_reachable_nodes', help = "Maximum number of nodes until reachability query is still triggered.", default = 80, type = int) 
 parser.add_argument('-d', '--debug', help = "Print additional information", default = False) 
 parser.add_argument('-q', '--query', help = "Path to the boolean query for the decision boundary.", default = 'guaranteed.q')
 
@@ -296,7 +295,7 @@ def query(g, query_path):
         for s in subgraph_unrolled.nodes:
             if "positive" in s:
                 positives.append(s)
-        assert(len(positives) <= 1)
+        #assert(len(positives) <= 1)
         to_uppaal(subgraph_unrolled, args.output+'bpi2017subgraph.xml')
         out = subprocess.Popen([args.uppaal_stratego, args.output+'bpi2017subgraph.xml', query_path], stdout=subprocess.PIPE)
         result = "is satisfied" in str(out.communicate()[0])
@@ -349,6 +348,9 @@ def reachable_cluster(g, results):
             g.nodes[s]['decision_boundary'] = True
 
             g.nodes[s]['viz'] = {'color': {'r': 0, 'g': 0, 'b':255, 'a': 0}}
+        else:
+            assert(s in g.nodes)
+            g.nodes[s]['decision_boundary'] = False
     
     return g
 
@@ -359,7 +361,7 @@ g, results = query(g, args.query)
 # Compute decision boundary
 g = reachable_cluster(g, results)
 
-name = args.output+"DECB"+ args.input.split("/")[-1].split(".")[0].split("GAME")[-1] + "_threshold_reachable_nodes:" + str(args.threshold_reachable_nodes) + "_" + "unrolling_factor:" + str(args.unrolling_factor) + "_" + ".gexf"
+name = args.output+"DECB"+ args.input.split("/")[-1].split(".")[0].split("GAME")[-1] + "_unrolling_factor:" + str(args.unrolling_factor) + "_" + ".gexf"
 
 nx.write_gexf(g, name)
 print("Generated:", name)
