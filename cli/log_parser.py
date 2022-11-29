@@ -1,5 +1,4 @@
 import argparse
-import copy
 import pandas as pd
 import pm4py
 from pm4py.objects.log.importer.xes import importer as xes_importer

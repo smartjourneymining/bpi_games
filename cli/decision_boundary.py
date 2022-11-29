@@ -1,9 +1,7 @@
 import argparse
-from pm4py.objects.log.importer.xes import importer as xes_importer
 import networkx as nx
 import copy 
 import subprocess
-from datetime import datetime
 
 parser = argparse.ArgumentParser(
                     prog = 'decision_boundary',

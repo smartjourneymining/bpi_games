@@ -1,7 +1,5 @@
 import argparse
-from pm4py.objects.log.importer.xes import importer as xes_importer
 import networkx as nx
-import os 
 
 parser = argparse.ArgumentParser(
                     prog = 'decision_boundary_reduction',
