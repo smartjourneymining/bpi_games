@@ -43,22 +43,22 @@ Pre-process the event log and build a .xes file:\
 
 Compute a process model based on the processed event log:\
 `python3 process_model.py bpic2017_after.xes ./ -t multiset -hist 3`\
- \
+ 
 `Generated: ./PMODEL_input:bpic2017_after_type:multiset_history:3.gexf`
 
 Transform the process model into a game:\
 `python3 build_game.py  PMODEL_input:bpic2017_after_type:multiset_history:3.gexf ./ activities.xml`\ 
-\
+
 `Generated: ./GAME_input:bpic2017_after_type:multiset_history:3_actors:activities.xml.gexf`
 
 Compute the decision boundary:\
 `python3 decision_boundary.py ./GAME_input\:bpic2017_after_type\:multiset_history\:3_actors\:activities.xml.gexf ./ ~/uppaal-4.1.20-stratego-9-linux64/bin/verifyta`\ 
-\
+
 `Generated: ./DECB_input:bpic2017_after_type:multiset_history:3_actors:activities_unrolling_factor:1_.gexf`
 
 Use the decision boundary as model reduction:\
 `python3 decision_boundary_reduction.py DECB_input\:bpic2017_after_type\:multiset_history\:3_actors\:activities_unrolling_factor\:1_.gexf ./`\ 
-\
+
 `Generated: ./DECB_input:bpic2017_after_type:multiset_history:3_actors:activities_unrolling_factor:1_reduced:True.gexf`
 
 ## File format
