@@ -17,6 +17,7 @@ Note: the construction of plots creates additional *.dot files.
 # Command line tool
 The folder 'cli' contains the command line tool to compute the decision boundary of a XES event-log, consisting of several independent programs.
 All tools are implemented as command-line tools in Python.
+The required python libraries are stated in "cli/requirements.txt", the command line tool does not use "pygraphviz".
 The file 'execution.py' demonstrates how the tools are connected and implements parameter tests for ranges of transition system histories and unrolling factors.
 Mind that for every step a single file is created, the output might be excessive.
 
