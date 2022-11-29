@@ -35,7 +35,7 @@ The actor information is given as input in JSON. Every edge not stated is consid
 
 ## Example:
 The execution of the tool is illustrated with the [BPIC 2017](https://data.4tu.nl/articles/dataset/BPI_Challenge_2017/12696884) dataset.
-It is assumed that UPPAAL 4.1.20 with Stratego 9 is installed, [here](https://people.cs.aau.dk/~marius/stratego/download.html#download) and the required python libraries, "requirements.txt".
+It is assumed that UPPAAL 4.1.20 with Stratego 9 is [installed](https://people.cs.aau.dk/~marius/stratego/download.html#download) and the required python libraries, "requirements.txt".
 Ensure that the working directory contains all files and is set as output directory.
 
 Pre-process the event log and build a .xes file:\
