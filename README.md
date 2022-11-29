@@ -33,6 +33,30 @@ The actor information is given as input in JSON. Every edge not stated is consid
 - "decision_boundary.py'' computes the decision boundary and writes the annotated game as output, the reduction is only performed in the next step.
 - "decision_boundary_reduction.py'' applies the decision boundary reduction: Merging all negative nodes into one and all positive nodes into one.
 
+## Example:
+The execution of the tool is illustrated with the [BPIC 2017](https://data.4tu.nl/articles/dataset/BPI_Challenge_2017/12696884) dataset.
+It is assumed that UPPAAL 4.1.20 with Stratego 9 is installed, [here](https://people.cs.aau.dk/~marius/stratego/download.html#download) and the required python libraries, "requirements.txt".
+Ensure that the working directory contains all files and is set as output directory.
+
+Pre-process the event log and build a .xes file:
+`python3 log_parser.py  "BPI Challenge 2017.xes" ./ ` 
+
+Compute a process model based on the processed event log:
+`python3 process_model.py bpic2017_after.xes ./ -t multiset -hist 3`
+`Generated: ./PMODEL_input:bpic2017_after_type:multiset_history:3.gexf`
+
+Transform the process model into a game:
+`python3 build_game.py  PMODEL_input:bpic2017_after_type:multiset_history:3.gexf ./ activities.xml`
+`Generated: ./GAME_input:bpic2017_after_type:multiset_history:3_actors:activities.xml.gexf`
+
+Compute the decision boundary:
+`python3 decision_boundary.py ./GAME_input\:bpic2017_after_type\:multiset_history\:3_actors\:activities.xml.gexf ./ ~/uppaal-4.1.20-stratego-9-linux64/bin/verifyta`
+`Generated: ./DECB_input:bpic2017_after_type:multiset_history:3_actors:activities_unrolling_factor:1_.gexf`
+
+Use the decision boundary as model reduction:
+`python3 decision_boundary_reduction.py DECB_input\:bpic2017_after_type\:multiset_history\:3_actors\:activities_unrolling_factor\:1_.gexf ./`
+`Generated: ./DECB_input:bpic2017_after_type:multiset_history:3_actors:activities_unrolling_factor:1_reduced:True.gexf`
+
 ## File format
 We use the ".gexf" file format to store transition systems, and games.
 
