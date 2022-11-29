@@ -38,22 +38,22 @@ The execution of the tool is illustrated with the [BPIC 2017](https://data.4tu.n
 It is assumed that UPPAAL 4.1.20 with Stratego 9 is installed, [here](https://people.cs.aau.dk/~marius/stratego/download.html#download) and the required python libraries, "requirements.txt".
 Ensure that the working directory contains all files and is set as output directory.
 
-Pre-process the event log and build a .xes file:
+Pre-process the event log and build a .xes file:\
 `python3 log_parser.py  "BPI Challenge 2017.xes" ./ ` 
 
-Compute a process model based on the processed event log:
+Compute a process model based on the processed event log:\
 `python3 process_model.py bpic2017_after.xes ./ -t multiset -hist 3` \
 `Generated: ./PMODEL_input:bpic2017_after_type:multiset_history:3.gexf`
 
-Transform the process model into a game:
+Transform the process model into a game:\
 `python3 build_game.py  PMODEL_input:bpic2017_after_type:multiset_history:3.gexf ./ activities.xml` \
 `Generated: ./GAME_input:bpic2017_after_type:multiset_history:3_actors:activities.xml.gexf`
 
-Compute the decision boundary:
+Compute the decision boundary:\
 `python3 decision_boundary.py ./GAME_input\:bpic2017_after_type\:multiset_history\:3_actors\:activities.xml.gexf ./ ~/uppaal-4.1.20-stratego-9-linux64/bin/verifyta` \
 `Generated: ./DECB_input:bpic2017_after_type:multiset_history:3_actors:activities_unrolling_factor:1_.gexf`
 
-Use the decision boundary as model reduction:
+Use the decision boundary as model reduction:\
 `python3 decision_boundary_reduction.py DECB_input\:bpic2017_after_type\:multiset_history\:3_actors\:activities_unrolling_factor\:1_.gexf ./` \
 `Generated: ./DECB_input:bpic2017_after_type:multiset_history:3_actors:activities_unrolling_factor:1_reduced:True.gexf`
 
