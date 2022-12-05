@@ -11,7 +11,7 @@ parser.add_argument('output', help = "Output path for game with annotated decisi
 parser.add_argument('uppaal_stratego', help = "Path to Uppaal Stratego's VERIFYTA") 
 parser.add_argument('-k', '--unrolling_factor', help = "Constant factor how often every lop is unrolled; default = 1", type = int, default = 1) 
 parser.add_argument('-d', '--debug', help = "Print additional information", default = False) 
-parser.add_argument('-q', '--query', help = "Path to the boolean query for the decision boundary.", default = 'guaranteed.q')
+parser.add_argument('-q', '--query', help = "Path to the boolean query for the decision boundary.", default = 'guaranteed_tool.q')
 
 args = parser.parse_args()
 
@@ -218,7 +218,6 @@ def query(g, query_path):
 
     for i in range(len(g.nodes)):
     #for a in g.nodes:
-
         assert(i in dfs_numbers)
         current_state = dfs_numbers[i]
 
