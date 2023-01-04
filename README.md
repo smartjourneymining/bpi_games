@@ -27,7 +27,8 @@ Each tool saves the chosen parameters in the filename of the written output and 
 Transition systems and games are saved in the ".gexf" fileformat, [.gexf](https://gexf.net/).
 Further details on written parameters are in the subsection "File Format".
 
-- "log_parser.py'' takes the BPIC'17 event log as input and performs the described preprocessing, writing two separate event-logs as output, called "bpic2017_after.xes" and "bpic2017_before.xes".
+- "log_parser_BPIC17.py'' takes the BPIC'17 event log as input and performs the described preprocessing, writing two separate event-logs as output, called "bpic2017_after.xes" and "bpic2017_before.xes".
+- "log_parser_BPIC12.py'' preprocesses the BPIC'12 event log; due to the performed clustering are further imported libraries needed.
 - "process_model.py'' constructs a process model from a preprocessed event log. The user can decide to either choose the "sequence" abstraction or the "multiset" abstraction and the length of the history. The resulting process model is saved and its name printed.
 - "build_game.py'' transform the process model to a game by annotating the edges with actor information.
 The actor information is given as input in JSON. Every edge not stated is considered to be controllable.
