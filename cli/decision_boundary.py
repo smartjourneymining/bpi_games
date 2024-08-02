@@ -12,6 +12,7 @@ parser.add_argument('uppaal_stratego', help = "Path to Uppaal Stratego's VERIFYT
 parser.add_argument('-d', '--debug', help = "Print additional information", default = False) 
 parser.add_argument('-q', '--query', help = "Path to the boolean query for the decision boundary.", default = 'guaranteed_tool.q')
 parser.add_argument('-k', '--unrolling_factor', help = "Constant factor how often every lop is unrolled; default = 0", type = int, default = 0) 
+parser.add_argument('-s', '--static', help = "Game decision boundary with neglecting game properties (static decision boundary); default = False", type = bool, default = False) 
 
 args = parser.parse_args()
 
@@ -205,6 +206,7 @@ def print_edge(f, s, t, pos_s, pos_t, w, controllable, e, g, guard = False):
     f.write('</transition>')
 
 # Computes mapping R from alg. 1
+# Return results too for easier handling
 def query(g, query_path):
     # partial graph implications, per activity
     results = {}
@@ -313,7 +315,9 @@ def reachable_cluster(g, results):
         subgraph = nx.DiGraph(subgraph)
         nodes = [s for s in subgraph]
         sub_results = [results[n] for n in results if n in nodes]
+        g.nodes[s]['reducible'] = False
         if len(set(sub_results))<2:
+            g.nodes[s]['reducible'] = True
             # sub_results has size 0 or 1: 0 if end node, 1 else
             if results[s]:
                 pos_cluster.append(s)
@@ -343,20 +347,75 @@ def reachable_cluster(g, results):
         if pos and neg and len(g_copy[s]) == 2:
             assert(s in g.nodes)
             g.nodes[s]['decision_boundary'] = True
-
-            g.nodes[s]['viz'] = {'color': {'r': 0, 'g': 0, 'b':255, 'a': 0}}
+            #g.nodes[s]['viz'] = {'color': {'r': 0, 'g': 0, 'b':255, 'a': 0}}
+            g.nodes[s]['color'] = "blue"
+            g.nodes[s]['shape'] = "box"
+            g.nodes[s]['viz'] = {'color': {'r': 0, 'g': 0, 'b': 255, 'a': 0}}
         else:
             assert(s in g.nodes)
             g.nodes[s]['decision_boundary'] = False
     
     return g
 
+def game_db(g, results):
+    g_copy = copy.deepcopy(g)
+    positive_cluster = []
+    for s in results:
+        if results[s]:
+            g_copy.nodes[s]['color'] = "green"
+            positive_cluster.append(s)
+
+    # attempted merge:
+    negative_cluster = []
+    for s in g_copy.nodes:
+        reachable = set(list(nx.descendants(g_copy, s)))
+        reaches_pos = False
+        for neighbour in reachable:
+            if "pos" in neighbour:
+                reaches_pos = True
+        if "pos" in s:
+            reaches_pos = True
+        if not reaches_pos:
+            g_copy.nodes[s]['color'] = "red"
+            negative_cluster.append(s)
+    for s in negative_cluster:
+        g_copy = nx.contracted_nodes(g_copy, "neg", s)
+    for s in positive_cluster:
+        g_copy = nx.contracted_nodes(g_copy, "pos", s)
+
+    db = []
+    for s in g:
+        pos = False
+        neg = False
+        g.nodes[s]['decision_boundary'] = False
+        g.nodes[s]['positive_guarantee'] = results[s]
+        if s in g_copy:
+            for n in g_copy[s]:
+                if "pos" in n:
+                    pos = True
+                if "neg" in n:
+                    neg = True
+            if pos and neg and len(g_copy[s]) == 2:
+                db.append(s)
+                g.nodes[s]['decision_boundary'] = True
+                g.nodes[s]['color'] = "blue"
+                g.nodes[s]['shape'] = "box"
+                g.nodes[s]['viz'] = {'color': {'r': 0, 'g': 0, 'b': 255, 'a': 0}}
+
+    return g, db
+
 # Load graph
 g = nx.read_gexf(args.input)
+
 # Compute single results
 g, results = query(g, args.query)
+
 # Compute decision boundary
-g = reachable_cluster(g, results)
+if not args.static:
+    g, db = game_db(g, results)
+else:
+    #g, db = db_shortcut(g)
+    g = reachable_cluster(g, results)
 
 name = args.output+"DECB"+ args.input.split("/")[-1].split(".")[0].split("GAME")[-1] + "_unrolling_factor:" + str(args.unrolling_factor) + "_" + ".gexf"
 
