@@ -3,7 +3,7 @@
 /*
 
 */
-strategy term = control: A<> positive || negative
+strategy term = control: A<> positive
 
 /*
 
@@ -68,14 +68,14 @@ E[#<=30; 100] (min: e)  under both
 /*
 
 */
-simulate 100 [#<=60] {e, positive, negative} under max
+simulate [#<=60; 100] {e} under max
 
 /*
 
 */
-simulate 100 [#<=60] {e, positive, negative} under step_strat
+simulate [#<=60; 100] {e} under step_strat
 
 /*
 
 */
-simulate 100 [#<=60] {e, positive, negative} under both
+simulate [#<=60; 100] {e} under both
