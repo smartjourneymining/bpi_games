@@ -1,4 +1,4 @@
-//This file was generated from (Academic) UPPAAL 4.1.20-stratego-9 (rev. 67D95DBCE6B8B4ED), January 2022
+//This file was generated from (Academic) UPPAAL 4.1.20-stratego-10 (rev. 37ECAAA437FE60EE), October 2022
 
 /*
 
@@ -79,3 +79,8 @@ simulate [#<=60; 100] {e} under step_strat
 
 */
 simulate [#<=60; 100] {e} under both
+
+/*
+
+*/
+control: A[] e > -35 under term
